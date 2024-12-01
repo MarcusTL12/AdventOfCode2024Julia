@@ -1,7 +1,5 @@
 
 function part1()
-    inp = read("$(homedir())/aoc-input/2024/day1/input", String)
-
     a = Int[]
     b = Int[]
 
