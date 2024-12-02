@@ -18,17 +18,9 @@
 end
 
 function part1()
-    c = 0
-
-    v = Int[]
-
-    for l in eachline("$(homedir())/aoc-input/2024/day2/input")
-        empty!(v)
-        append!(v, parse(UInt8, n) for n in eachsplit(l))
-        c += is_safe(v)
-    end
-
-    c
+    count(is_safe(parse(UInt8, n)
+                  for n in eachsplit(l))
+          for l in eachline("$(homedir())/aoc-input/2024/day2/input"))
 end
 
 function part2()
