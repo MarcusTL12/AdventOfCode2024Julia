@@ -77,6 +77,22 @@ function part1()
     c
 end
 
+function part1_regex()
+    inp = read("$(homedir())/aoc-input/2024/day4/input", String)
+
+    w = length(first(eachsplit(inp)))
+
+    multiline_reg(w) = Regex("X.{$w}M.{$w}A.{$w}S|S.{$w}A.{$w}M.{$w}X", "s")
+
+    regs = (r"XMAS|SAMX",
+        multiline_reg(w),
+        multiline_reg(w + 1),
+        multiline_reg(w - 1)
+    )
+
+    sum(count(true for _ in eachmatch(reg, inp, overlap=true)) for reg in regs)
+end
+
 function part2()
     w = 0
     h = 0
@@ -129,4 +145,14 @@ function part2()
     end
 
     c
+end
+
+function part2_regex()
+    inp = read("$(homedir())/aoc-input/2024/day4/input", String)
+
+    w = length(first(eachsplit(inp))) - 1
+
+    reg = Regex("(M|S)\\w(M|S).{$w}A.{$w}(?!\\2|X|A)..(?!\\1|X|A)", "s")
+
+    count(true for _ in eachmatch(reg, inp, overlap=true))
 end
