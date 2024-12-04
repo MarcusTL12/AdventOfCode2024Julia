@@ -1,3 +1,4 @@
+using DSP, LinearAlgebra
 
 function part1()
     w = 0
@@ -91,6 +92,39 @@ function part1_regex()
     )
 
     sum(count(true for _ in eachmatch(reg, inp, overlap=true)) for reg in regs)
+end
+
+function part1_conv()
+    w = 0
+    h = 0
+    mat = Char[]
+
+    for l in eachline("$(homedir())/aoc-input/2024/day4/input")
+        w = length(l)
+        h += 1
+        append!(mat, l)
+    end
+
+    mat = reshape(mat, w, h)
+
+    A = map(mat) do x
+        if x == 'X'
+            0
+        elseif x == 'M'
+            1
+        elseif x == 'A'
+            2
+        elseif x == 'S'
+            3
+        end
+    end
+
+    k = [1, 4, 16, 64]
+
+    count(x -> x == 27 || x == 228, conv(A, k)[4:end-3, :]) +
+    count(x -> x == 27 || x == 228, conv(A, k')[:, 4:end-3]) +
+    count(x -> x == 27 || x == 228, conv(A, Diagonal(k))[4:end-3, 4:end-3]) +
+    count(x -> x == 27 || x == 228, conv(A, rotl90(Diagonal(k)))[4:end-3, 4:end-3])
 end
 
 function part2()
