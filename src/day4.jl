@@ -190,3 +190,49 @@ function part2_regex()
 
     count(true for _ in eachmatch(reg, inp, overlap=true))
 end
+
+function part2_conv()
+    w = 0
+    h = 0
+    mat = Char[]
+
+    for l in eachline("$(homedir())/aoc-input/2024/day4/input")
+        w = length(l)
+        h += 1
+        append!(mat, l)
+    end
+
+    mat = reshape(mat, w, h)
+
+    A = map(mat) do x
+        if x == 'X'
+            0
+        elseif x == 'M'
+            1
+        elseif x == 'A'
+            2
+        elseif x == 'S'
+            3
+        end
+    end
+
+    k = [
+        1 0 5
+        0 25 0
+        125 0 625
+    ]
+
+    t1 = 1 * 1 + 625 * 3
+    t2 = 1 * 3 + 625 * 1
+    t3 = 5 * 1 + 125 * 3
+    t4 = 5 * 3 + 125 * 1
+
+    targets = 2 * 25 .+ (
+        t1 + t3,
+        t1 + t4,
+        t2 + t3,
+        t2 + t4,
+    )
+
+    count(∈(targets), conv(A, k))
+end
