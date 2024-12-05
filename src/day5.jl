@@ -15,11 +15,7 @@ function part1()
 
     s = 0
 
-    for l in eachsplit(s2, '\n')
-        if isempty(l)
-            continue
-        end
-
+    for l in eachsplit(s2, '\n', keepempty=false)
         v = parse.(Int, split(l, ','))
 
         if issorted(v, lt=lt)
@@ -46,11 +42,7 @@ function part1()
 
     s = 0
 
-    for l in eachsplit(s2, '\n')
-        if isempty(l)
-            continue
-        end
-
+    for l in eachsplit(s2, '\n', keepempty=false)
         v = parse.(Int, split(l, ','))
 
         if issorted(v, lt=lt)
@@ -64,4 +56,3 @@ function part1()
 
     s
 end
-
