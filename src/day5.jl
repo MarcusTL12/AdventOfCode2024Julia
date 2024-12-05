@@ -11,6 +11,8 @@ function part1()
         push!(orderings, (parse(Int, a), parse(Int, b)))
     end
 
+    lt = (x, y) -> (x, y) ∈ orderings
+
     s = 0
 
     for l in eachsplit(s2, '\n')
@@ -20,11 +22,9 @@ function part1()
 
         v = parse.(Int, split(l, ','))
 
-        if !all((v[i], v[i+1]) ∈ orderings for i in 1:length(v)-1)
-            continue
+        if issorted(v, lt=lt)
+            s += v[length(v)÷2+1]
         end
-
-        s += v[length(v)÷2+1]
     end
 
     s
@@ -42,6 +42,8 @@ function part1()
         push!(orderings, (parse(Int, a), parse(Int, b)))
     end
 
+    lt = (x, y) -> (x, y) ∈ orderings
+
     s = 0
 
     for l in eachsplit(s2, '\n')
@@ -51,7 +53,7 @@ function part1()
 
         v = parse.(Int, split(l, ','))
 
-        if all((v[i], v[i+1]) ∈ orderings for i in 1:length(v)-1)
+        if issorted(v, lt=lt)
             continue
         end
 
