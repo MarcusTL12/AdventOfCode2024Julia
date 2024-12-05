@@ -26,7 +26,7 @@ function part1()
     s
 end
 
-function part1()
+function part2()
     inp = read("$(homedir())/aoc-input/2024/day5/input", String)
 
     s1, s2 = split(inp, "\n\n")
