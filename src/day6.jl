@@ -22,7 +22,7 @@ function part1()
         end
     end
 
-    states = Set()
+    states = Set{NTuple{2,NTuple{2,Int}}}()
     visited = falses(w, h)
     visited[pos...] = true
 
@@ -42,8 +42,6 @@ function part1()
 
         pos = pos .+ dir
     end
-
-    display(visited')
 
     count(visited)
 end
@@ -76,6 +74,8 @@ function part2()
 
     c = 0
 
+    states = Set{NTuple{2,NTuple{2,Int}}}()
+
     for y in 1:h, x in 1:w
         if mat[x, y] == '#'
             continue
@@ -83,7 +83,7 @@ function part2()
 
         mat[x, y] = '#'
 
-        states = Set()
+        empty!(states)
 
         dir = (0, -1)
 
