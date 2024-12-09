@@ -81,8 +81,6 @@ function part2()
                 for j in 1:i-1
                     to = disk[j]
                     if isnothing(to[1]) && to[2] >= from[2]
-                        # println("Moving id $id from $i to $j")
-
                         disk[j] = (id, from[2])
 
                         disk[i] = (nothing, from[2])
