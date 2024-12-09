@@ -2,7 +2,7 @@
 function part1()
     inp = read("$(homedir())/aoc-input/2024/day9/input", String)
 
-    disk = Union{Int,Nothing}[]
+    disk = Int[]
 
     freespace = false
     id = 0
@@ -21,7 +21,7 @@ function part1()
             id += 1
         else
             for _ in 1:n
-                push!(disk, nothing)
+                push!(disk, -1)
             end
         end
 
@@ -31,14 +31,14 @@ function part1()
     i = 1
 
     while i < length(disk)
-        while i < length(disk) && isnothing(disk[i])
+        while i < length(disk) && disk[i] < 0
             disk[i] = pop!(disk)
         end
 
         i += 1
     end
 
-    while isnothing(last(disk))
+    while last(disk) < 0
         pop!(disk)
     end
 
@@ -48,7 +48,7 @@ end
 function part2()
     inp = read("$(homedir())/aoc-input/2024/day9/input", String)
 
-    disk = Tuple{Union{Int,Nothing},Int}[]
+    disk = Tuple{Int,Int}[]
 
     freespace = false
     id = 0
@@ -66,7 +66,7 @@ function part2()
             end
             id += 1
         elseif n > 0
-            push!(disk, (nothing, n))
+            push!(disk, (-1, n))
         end
 
         freespace = !freespace
@@ -80,22 +80,21 @@ function part2()
             if from[1] == id
                 for j in 1:i-1
                     to = disk[j]
-                    if isnothing(to[1]) && to[2] >= from[2]
+                    if to[1] < 0 && to[2] >= from[2]
                         disk[j] = (id, from[2])
 
-                        disk[i] = (nothing, from[2])
-                        if !isnothing(get(disk, i + 1, nothing)) &&
-                           isnothing(disk[i+1][1])
-                            disk[i] = (nothing, disk[i][2] + disk[i+1][2])
+                        disk[i] = (-1, from[2])
+                        if i + 1 <= length(disk) && disk[i+1][1] < 0
+                            disk[i] = (-1, disk[i][2] + disk[i+1][2])
                             deleteat!(disk, i + 1)
                         end
-                        if isnothing(disk[i-1][1])
-                            disk[i-1] = (nothing, disk[i-1][2] + disk[i][2])
+                        if disk[i-1][1] < 0
+                            disk[i-1] = (-1, disk[i-1][2] + disk[i][2])
                             deleteat!(disk, i)
                         end
 
                         if to[2] > from[2]
-                            insert!(disk, j + 1, (nothing, to[2] - from[2]))
+                            insert!(disk, j + 1, (-1, to[2] - from[2]))
                         end
 
                         did_something = true
@@ -113,7 +112,7 @@ function part2()
     i = 0
     s = 0
     for (x, n) in disk
-        if !isnothing(x)
+        if x >= 0
             for _ in 1:n
                 s += x * i
                 i += 1
