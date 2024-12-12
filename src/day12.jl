@@ -4,7 +4,7 @@ function part1()
     h = 0
     mat = Char[]
 
-    for l in eachline("$(homedir())/aoc-input/2024/day12/ex2")
+    for l in eachline("$(homedir())/aoc-input/2024/day12/input")
         w = length(l)
         h += 1
         append!(mat, l)
@@ -12,8 +12,10 @@ function part1()
 
     mat = reshape(mat, w, h)
 
-    area = Dict{Char,Int}()
-    perimeter = Dict{Char,Int}()
+    visited = falses(w, h)
+
+    area = Int[]
+    perimeter = Int[]
 
     dirs = (
         (1, 0),
@@ -22,24 +24,34 @@ function part1()
         (0, -1),
     )
 
-    for j in 1:h, i in 1:w
-        c = mat[i, j]
-
-        area[c] = get(area, c, 0) + 1
-
-        for d in dirs
-            if get(mat, ((i, j) .+ d), ' ') != mat[i, j]
-                perimeter[c] = get(perimeter, c, 0) + 1
-            end
-        end
-    end
-
     s = 0
 
-    for (k, v) in area
-        @show k, v, perimeter[k]
+    for j in 1:h, i in 1:w
+        if !visited[i, j]
+            a, p = 0, 0
 
-        s += v * perimeter[k]
+            queue = [(i, j)]
+            visited[i, j] = true
+
+            while !isempty(queue)
+                pos = popfirst!(queue)
+                a += 1
+
+                for d in dirs
+                    npos = pos .+ d
+                    if get(mat, npos, ' ') == mat[pos...]
+                        if !visited[npos...]
+                            push!(queue, npos)
+                            visited[npos...] = true
+                        end
+                    else
+                        p += 1
+                    end
+                end
+            end
+
+            s += a * p
+        end
     end
 
     s
