@@ -76,6 +76,13 @@ function part2()
         (0, -1),
     )
 
+    otherdirs = (
+        ((0, -1), (1, -1)),
+        ((0, -1), (-1, -1)),
+        ((-1, 0), (-1, 1)),
+        ((-1, 0), (-1, -1)),
+    )
+
     s = 0
 
     nextid = 1
@@ -109,30 +116,11 @@ function part2()
                 for (di, d) in enumerate(dirs)
                     npos = pos .+ d
                     if ids[pos...] != get(ids, npos, 0)
-                        if di == 1
-                            if get(mat, pos .+ (0, -1), ' ') == mat[pos...] &&
-                               get(mat, pos .+ (1, -1), ' ') == mat[pos...] ||
-                               get(mat, pos .+ (0, -1), ' ') != mat[pos...]
-                                p += 1
-                            end
-                        elseif di == 2
-                            if get(mat, pos .+ (0, -1), ' ') == mat[pos...] &&
-                               get(mat, pos .+ (-1, -1), ' ') == mat[pos...] ||
-                               get(mat, pos .+ (0, -1), ' ') != mat[pos...]
-                                p += 1
-                            end
-                        elseif di == 3
-                            if get(mat, pos .+ (-1, 0), ' ') == mat[pos...] &&
-                               get(mat, pos .+ (-1, 1), ' ') == mat[pos...] ||
-                               get(mat, pos .+ (-1, 0), ' ') != mat[pos...]
-                                p += 1
-                            end
-                        elseif di == 4
-                            if get(mat, pos .+ (-1, 0), ' ') == mat[pos...] &&
-                               get(mat, pos .+ (-1, -1), ' ') == mat[pos...] ||
-                               get(mat, pos .+ (-1, 0), ' ') != mat[pos...]
-                                p += 1
-                            end
+                        (back, diag) = otherdirs[di]
+                        if get(mat, pos .+ back, ' ') == mat[pos...] &&
+                           get(mat, pos .+ diag, ' ') == mat[pos...] ||
+                           get(mat, pos .+ back, ' ') != mat[pos...]
+                            p += 1
                         end
                     end
                 end
