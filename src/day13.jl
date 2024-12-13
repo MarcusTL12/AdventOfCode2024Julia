@@ -12,7 +12,7 @@ Prize: X=(\d+), Y=(\d+)"""
         A = reshape(parse.(Int, m.captures[1:4]), 2, 2)
         b = parse.(Int, m.captures[5:6])
 
-        x1, x2 = A\b
+        x1, x2 = A \ b
 
         x1_int = round(Int, x1)
         x2_int = round(Int, x2)
@@ -24,7 +24,6 @@ Prize: X=(\d+), Y=(\d+)"""
 
     s
 end
-
 
 function part2()
     inp = read("$(homedir())/aoc-input/2024/day13/input", String)
@@ -39,7 +38,7 @@ Prize: X=(\d+), Y=(\d+)"""
         A = reshape(parse.(BigInt, m.captures[1:4]), 2, 2)
         b = parse.(BigInt, m.captures[5:6]) .+ 10000000000000
 
-        x1, x2 = A\b
+        x1, x2 = A \ b
 
         x1_int = round(Int, x1)
         x2_int = round(Int, x2)
@@ -51,4 +50,3 @@ Prize: X=(\d+), Y=(\d+)"""
 
     s
 end
-
