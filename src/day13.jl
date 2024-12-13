@@ -22,7 +22,7 @@ Prize: X=(\d+), Y=(\d+)"""
     s
 end
 
-function part1()
+function part2()
     inp = read("$(homedir())/aoc-input/2024/day13/input", String)
 
     reg = r"""Button A: X\+(\d+), Y\+(\d+)
