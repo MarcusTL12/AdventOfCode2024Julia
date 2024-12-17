@@ -11,7 +11,7 @@ Program: (.+)"""
     m = match(reg, inp)
 
     # a = parse(Int, m.captures[1])
-    a = 37222273957364
+    a = 22306825616884
     b, c = 0, 0
 
     ip = 1
@@ -121,7 +121,7 @@ function checka(a, program)
             ip += 2
         elseif opcode == 5
             if out_n > length(program)
-                return out_n
+                return 0
             end
             if eval_combo(ip + 1, a, b, c, program) % 8 == program[out_n]
                 out_n += 1
@@ -155,54 +155,63 @@ Program: (.+)"""
     m = match(reg, inp)
     program = parse.(Int, eachsplit(m.captures[2], ','))
 
-    # s = 0
+    a_parts = Int[]
 
-    # for a in 0:2^3 - 1
+    rec_search(a_parts, program)
+end
 
-    # end
-
-    # s
-
-    # working
-    # 37222273957364
-    # 37222278740468
-    # 37222278740468
-    # 37222278756852
-
-    # as = [4, 6, 7, 4, 7, 7, 4, 5]
-    as = (4, 6, 7, 6, 3, 5, 2, 3)
-    # as = (4, 6, 7, 4, 3, 7, 4, 5)
-
-    # a0 = 4
-    # a1 = 6
-    # a2 = 7
-    # a3 = 4
-    # a4 = 3 # eller 7
-    # a5 = 7
-    # a6 = 4
-    # a7 = 5
-
-    # a3 = 6 # eller 4
-    # a4 = 3
-    # a5 = 5
-
-    # for a in 0:2^25
-    #     ax = a
-    #     for x in reverse(as)
-    #         ax = (ax << 3) | x
-    #     end
-    #     if checka(ax, program) >= 17
-    #         # @show a % 8
-    #         @show a
-    #     end
-    # end
-
-    # a = (4437240 << 23) | a0 | (a1 << 3) | (a2 << 6) | (a3 << 9) | (a4 << 12) |
-    #     (a5 << 15) | (a6 << 18) | (a7 << 21)
-
-    ax = 2218620
-    for x in reverse(as)
-        ax = (ax << 3) | x
+function rec_search(a_parts, program)
+    if length(a_parts) == length(program)
+        a = 0
+        for x in Iterators.reverse(a_parts)
+            a = (a << 3) | x
+        end
+        return a
     end
-    ax
+
+    @show a_parts
+
+    possibilities = Int[]
+    max_match = 0
+
+    a_bottom = 0
+    for x in Iterators.reverse(a_parts)
+        a_bottom = (a_bottom << 3) | x
+    end
+
+    shifter = 3 * length(a_parts)
+
+    for a_rest in 0:2^25
+        a = (a_rest << shifter) | a_bottom
+
+        n = checka(a, program)
+        if n > max_match
+            empty!(possibilities)
+            max_match = n
+            push!(possibilities, a_rest % 8)
+        end
+    end
+
+    if max_match < length(a_parts) + 2 || isempty(possibilities)
+        return nothing
+    end
+
+    @show max_match possibilities
+
+    best_a = nothing
+
+    for next_part in possibilities
+        push!(a_parts, next_part)
+
+        a = rec_search(a_parts, program)
+        if isnothing(best_a)
+            best_a = a
+        elseif !isnothing(a)
+            best_a = min(best_a, a)
+        end
+
+        pop!(a_parts)
+    end
+
+    best_a
 end
