@@ -169,8 +169,6 @@ function rec_search(a_parts, program)
         return a
     end
 
-    @show a_parts
-
     possibilities = Int[]
     max_match = 0
 
@@ -181,7 +179,7 @@ function rec_search(a_parts, program)
 
     shifter = 3 * length(a_parts)
 
-    for a_rest in 0:2^25
+    for a_rest in 0:2^22
         a = (a_rest << shifter) | a_bottom
 
         n = checka(a, program)
@@ -195,8 +193,6 @@ function rec_search(a_parts, program)
     if max_match < length(a_parts) + 2 || isempty(possibilities)
         return nothing
     end
-
-    @show max_match possibilities
 
     best_a = nothing
 
