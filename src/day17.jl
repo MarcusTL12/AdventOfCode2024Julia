@@ -10,7 +10,9 @@ Program: (.+)"""
 
     m = match(reg, inp)
 
-    a = parse(Int, m.captures[1])
+    # a = parse(Int, m.captures[1])
+    a = 1279
+    # a = 37222273957364
     b, c = 0, 0
 
     ip = 1
@@ -209,4 +211,104 @@ function rec_search(a_parts, program)
     end
 
     best_a
+end
+
+function part2_smart()
+    reg = r"""Register A: (\d+)
+Register B: 0
+Register C: 0
+
+Program: (.+)"""
+
+    inp = read("$(homedir())/aoc-input/2024/day17/input", String)
+
+    m = match(reg, inp)
+    program = parse.(Int, eachsplit(m.captures[2], ','))
+
+    mask = 0
+    bits = 0
+
+    rec_search2(program, mask, bits, 1)
+end
+
+function rec_search2(program, mask, bits, i)
+    if i > length(program)
+        return bits
+    end
+
+    # println()
+    # println()
+
+    # @show i
+    # println("mask     ", bitstring(mask))
+    # println("bits     ", bitstring(bits))
+
+    # readline()
+
+    target = program[i]
+
+    global_shifter = (i - 1) * 3
+
+    best = typemax(Int)
+
+    for a_part in 0:7
+        shifter = a_part ⊻ 2
+
+        mask1 = Int(0b111)
+        mask2 = mask1 << shifter
+
+        b = a_part ⊻ 1
+        c = b ⊻ target
+
+        c_shift = c << shifter
+
+        common_mask = mask1 & mask2
+
+        # @show shifter
+        # println("a_part   ", bitstring(a_part))
+        # println("target   ", bitstring(target))
+        # println("mask1    ", bitstring(mask1))
+        # println("mask2    ", bitstring(mask2))
+        # println("b        ", bitstring(b))
+        # println("c_shift  ", bitstring(c_shift))
+        # println("c_mask   ", bitstring(common_mask))
+        # println("check    ", bitstring(a_part ⊻ c_shift))
+
+        # readline()
+
+        if (a_part ⊻ c_shift) & common_mask != 0
+            # println("Self overlap")
+            continue
+        end
+
+        new_mask = (mask1 | mask2) << global_shifter
+        new_bits = (a_part | c_shift) << global_shifter
+
+        overlap = mask & new_mask
+
+        # println("new_mask ", bitstring(new_mask))
+        # println("new_bits ", bitstring(new_bits))
+        # println("overlap  ", bitstring(overlap))
+        # println("the bits ", bitstring(bits))
+        # println("the fuck ", bitstring(new_bits ⊻ bits))
+        # println("the fuck ", bitstring((new_bits ⊻ bits) & overlap))
+
+        # readline()
+
+        if (new_bits ⊻ bits) & overlap != 0
+            # println("Overlap")
+            continue
+        end
+
+        if cld(64 - leading_zeros(new_bits), 3) > length(program)
+            # @show new_bits
+            continue
+        end
+
+        best = min(
+            rec_search2(program, mask | new_mask, bits | new_bits, i + 1), best
+        )
+    end
+
+    best
 end
