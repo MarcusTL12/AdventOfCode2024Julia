@@ -236,15 +236,6 @@ function rec_search2(program, mask, bits, i)
         return bits
     end
 
-    # println()
-    # println()
-
-    # @show i
-    # println("mask     ", bitstring(mask))
-    # println("bits     ", bitstring(bits))
-
-    # readline()
-
     target = program[i]
 
     global_shifter = (i - 1) * 3
@@ -264,20 +255,7 @@ function rec_search2(program, mask, bits, i)
 
         common_mask = mask1 & mask2
 
-        # @show shifter
-        # println("a_part   ", bitstring(a_part))
-        # println("target   ", bitstring(target))
-        # println("mask1    ", bitstring(mask1))
-        # println("mask2    ", bitstring(mask2))
-        # println("b        ", bitstring(b))
-        # println("c_shift  ", bitstring(c_shift))
-        # println("c_mask   ", bitstring(common_mask))
-        # println("check    ", bitstring(a_part ⊻ c_shift))
-
-        # readline()
-
         if (a_part ⊻ c_shift) & common_mask != 0
-            # println("Self overlap")
             continue
         end
 
@@ -286,22 +264,11 @@ function rec_search2(program, mask, bits, i)
 
         overlap = mask & new_mask
 
-        # println("new_mask ", bitstring(new_mask))
-        # println("new_bits ", bitstring(new_bits))
-        # println("overlap  ", bitstring(overlap))
-        # println("the bits ", bitstring(bits))
-        # println("the fuck ", bitstring(new_bits ⊻ bits))
-        # println("the fuck ", bitstring((new_bits ⊻ bits) & overlap))
-
-        # readline()
-
         if (new_bits ⊻ bits) & overlap != 0
-            # println("Overlap")
             continue
         end
 
         if cld(64 - leading_zeros(new_bits), 3) > length(program)
-            # @show new_bits
             continue
         end
 
