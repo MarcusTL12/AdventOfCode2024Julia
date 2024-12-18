@@ -10,8 +10,7 @@ Program: (.+)"""
 
     m = match(reg, inp)
 
-    # a = parse(Int, m.captures[1])
-    a = 1279
+    a = parse(Int, m.captures[1])
     # a = 37222273957364
     b, c = 0, 0
 
