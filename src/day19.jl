@@ -61,7 +61,7 @@ function part2()
     towels = popfirst!(lines)
     popfirst!(lines)
 
-    towels = split(towels, ", ")
+    towels = Set(split(towels, ", "))
 
     memo = Dict{String,Int}()
 
