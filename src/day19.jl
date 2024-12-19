@@ -21,7 +21,7 @@ function part1()
     towels = popfirst!(lines)
     popfirst!(lines)
 
-    towels = split(towels, ", ")
+    towels = Set(split(towels, ", "))
 
     c = 0
 
