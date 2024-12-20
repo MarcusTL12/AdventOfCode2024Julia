@@ -59,10 +59,6 @@ function part1()
     for cy in 2:h-1, cx in 2:w-1
         l = bfs(mat, (cx, cy), start, stop)
 
-        # if l < normal_len
-        #     @show l
-        # end
-
         if l <= normal_len - 100
             c += 1
         end
@@ -71,9 +67,9 @@ function part1()
     c
 end
 
-function bfs2(mat, cheat_in, cheat_out, start, stop)
-    queue = [(start, 0, false)]
-    seen = Set([(start, false)])
+function bfs3(mat, start, stop)
+    queue = [(start, start)]
+    seen = Dict([start => start])
 
     dirs = (
         (1, 0),
@@ -82,32 +78,29 @@ function bfs2(mat, cheat_in, cheat_out, start, stop)
         (0, -1),
     )
 
-    cheat_len = sum(abs, cheat_out .- cheat_in)
-
     while !isempty(queue)
-        pos, l, cheated = popfirst!(queue)
-
-        if pos == cheat_in && !cheated
-            if cheat_out == stop
-                return l + cheat_len
-            end
-            push!(queue, (cheat_out, l + cheat_len, true))
-            push!(seen, (cheat_out, true))
-        end
+        pos, from = popfirst!(queue)
 
         for d in dirs
             npos = pos .+ d
 
             if npos == stop
-                return l + 1
+                seen[npos] = pos
+                break
             end
 
-            if mat[npos...] != '#' && (npos, cheated) ∉ seen
-                push!(queue, (npos, l + 1, cheated))
-                push!(seen, (npos, cheated))
+            if mat[npos...] != '#' && !haskey(seen, npos)
+                push!(queue, (npos, pos))
+                seen[npos] = pos
             end
         end
     end
+
+    path = [stop]
+    while path[end] != start
+        push!(path, seen[path[end]])
+    end
+    reverse!(path)
 end
 
 function part2()
@@ -115,7 +108,7 @@ function part2()
     h = 0
     mat = Char[]
 
-    for l in eachline("$(homedir())/aoc-input/2024/day20/ex1")
+    for l in eachline("$(homedir())/aoc-input/2024/day20/input")
         w = length(l)
         h += 1
         append!(mat, l)
@@ -134,39 +127,23 @@ function part2()
         end
     end
 
-    normal_len = bfs(mat, (0, 0), start, stop)
+    path = bfs3(mat, start, stop)
 
-    c = Threads.Atomic{Int}(0)
-    t = Threads.Atomic{Float64}(time())
+    c = 0
 
-    all_from = [(cx, cy) for cy in 2:h-1 for cx in 2:w-1]
+    for i in eachindex(path), j in (i+1):length(path)
+        from = path[i]
+        to = path[j]
+        cheat_dist = sum(abs, to .- from)
 
-    filter!(all_from) do from
-        mat[from...] != '#'
-    end
-
-    Threads.@threads for (cx, cy) in all_from
-        from = (cx, cy)
-        if get(mat, from, '#') == '#'
+        if cheat_dist > 20
             continue
         end
 
-        for dy in -20:20, dx in -(20 - abs(dy)):(20-abs(dy))
+        saved_dist = (j - i) - cheat_dist
 
-            to = from .+ (dx, dy)
-            if get(mat, to, '#') == '#'
-                continue
-            end
-            l = bfs2(mat, from, to, start, stop)
-
-            if l <= normal_len - 50
-                Threads.atomic_add!(c, 1)
-
-                if time() - t[] > 1.0
-                    Threads.atomic_add!(t, 1.0)
-                    @show c
-                end
-            end
+        if saved_dist >= 100
+            c += 1
         end
     end
 
