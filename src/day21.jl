@@ -104,7 +104,7 @@ function bfs(seq)
                 key = get(keypad, r1, -1)
                 if key == seq[curcode]
                     if curcode == length(seq)
-                        # println(String(["^<v>     A"[x] for x in [curpath; 10]]))
+                        println(String(["^<v>     A"[x] for x in [curpath; 10]]))
                         return l + 1
                     else
                         k = (r1, r2, r3, curcode + 1)
@@ -133,6 +133,8 @@ function part1()
         end
 
         len = bfs(seq)
+
+        @show len
 
         s += n * len
     end
@@ -222,9 +224,120 @@ function bfs2(seq, n_dir)
     end
 end
 
+dirpad::Matrix{Int} = [
+    -1 1 10
+    2 3 4
+]
+
+dir_lookup::Dict{Int,NTuple{2,Int}} = pad2lookup(dirpad)
+
+keypad::Matrix{Int} = [
+    7 8 9
+    4 5 6
+    1 2 3
+    -1 0 10
+]
+
+key_lookup::Dict{Int,NTuple{2,Int}} = pad2lookup(keypad)
+
+function add_delta_to_path!(path, dy, dx)
+    while dx < 0
+        dx += 1
+        push!(path, 2)
+    end
+    while dx > 0
+        dx -= 1
+        push!(path, 4)
+    end
+    while dy < 0
+        dy += 1
+        push!(path, 1)
+    end
+    while dy > 0
+        dy -= 1
+        push!(path, 3)
+    end
+end
+
+function make_path_from_path(lookup, target_path)
+    pos = lookup[10]
+
+    path = Int[]
+
+    for key in target_path
+        target = lookup[key]
+        add_delta_to_path!(path, (target .- pos)...)
+        pos = target
+        push!(path, 10)
+    end
+
+    target = lookup[10]
+
+    path
+end
+
+function rec(depth, pos, target)
+    dy, dx = target .- pos
+
+    @show depth, pos, target
+
+    if depth == 0
+        return abs(dy) + abs(dx) + 1
+    end
+
+    pos = (1, 3)
+
+    n = 0
+
+    if dx != 0
+        target = if dx < 0
+            (2, 1)
+        else
+            (2, 3)
+        end
+
+        n += rec(depth - 1, pos, target)
+        n += abs(dx) - 1
+
+        pos = target
+    end
+
+    if dy != 0
+        target = if dy < 0
+            (1, 2)
+        else
+            (2, 2)
+        end
+
+        n += rec(depth - 1, pos, target)
+        n += abs(dy) - 1
+
+        pos = target
+    end
+
+    n += rec(depth - 1, pos, (1, 3))
+
+    n
+end
+
+function solve_rec(depth, path)
+    pos = (4, 3)
+
+    n = 0
+
+    for key in path
+        target = key_lookup[key]
+
+        n += rec(depth, pos, target)
+        pos = target
+    end
+
+    n
+end
+
 function part2()
     s = 0
-    for l in eachline("$(homedir())/aoc-input/2024/day21/input")
+    for l in eachline("$(homedir())/aoc-input/2024/day21/ex1")
         n = parse(Int, l[1:end-1])
 
         seq = map(collect(l)) do c
@@ -235,9 +348,16 @@ function part2()
             end
         end
 
-        len = bfs2(seq, 6)
+        lookup = key_lookup
 
-        s += n * len
+        for _ in 0:2
+            seq = make_path_from_path(lookup, seq)
+            lookup = dir_lookup
+        end
+
+        @show length(seq)
+
+        s += n * length(seq)
     end
     s
 end
