@@ -58,7 +58,7 @@ function bfs(seq)
     while !isempty(queue)
         r1, r2, r3, curcode, curpath, l = popfirst!(queue)
 
-        @show r1, r2, r3, curcode
+        # @show r1, r2, r3, curcode
 
         # You pressing directions
         for (i, d) in enumerate(dirs)
@@ -120,12 +120,23 @@ function bfs(seq)
 end
 
 function part1()
+    s = 0
+    for l in eachline("$(homedir())/aoc-input/2024/day21/input")
+        n = parse(Int, l[1:end-1])
 
-    # for l in eachline("$(homedir())/aoc-input/2024/day21/input")
+        seq = map(collect(l)) do c
+            if c == 'A'
+                10
+            else
+                c - '0'
+            end
+        end
 
-    # end
+        len = bfs(seq)
 
-    bfs([0, 2, 9, 10])
+        s += n * len
+    end
+    s
 end
 
 function part2()
