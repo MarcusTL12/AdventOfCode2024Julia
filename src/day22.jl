@@ -57,12 +57,17 @@ function part2()
 
     dp = [prices[i+1, j] - prices[i, j] for i in 1:2000, j in 1:n_lines]
 
-    typeof(dp)
+    possible_seq = Set{Vector{Int8}}()
+
+    for j in 1:n_lines
+        for i in 1:2000-4
+            push!(possible_seq, dp[i:i+3, j])
+        end
+    end
 
     best = Threads.Atomic{Int}(0)
 
-    all_to_test = [Int8[a, b, c, d]
-                   for a in -9:9, b in -9:9, c in -9:9, d in -9:9]
+    all_to_test = collect(possible_seq)
 
     Threads.@threads for seq in all_to_test
         Threads.atomic_max!(best, find_for_seq(seq, prices, dp))
